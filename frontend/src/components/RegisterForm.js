@@ -1,7 +1,15 @@
 import React, { useState } from "react";
+import { addUser } from '../api/userApi';
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Snackbar,
+  Alert
+} from '@mui/material';
 
 const RegisterForm = () => {
-
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -11,6 +19,7 @@ const RegisterForm = () => {
 
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,73 +40,109 @@ const RegisterForm = () => {
     return errors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length === 0) {
-      setSuccessMessage("Registration successful!");
-      console.log("Form Data Submitted:", formData);
-      setFormData({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      });
+      try {
+        const user = {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        };
+        const response = await addUser(user);
+        if (response) {
+          setSuccessMessage("Registration successful!");
+          setOpenSnackbar(true);
+          setFormData({
+            name: "",
+            email: "",
+            password: "",
+            confirmPassword: "",
+          });
+        } else {
+          setSuccessMessage("Registration failed. Try again.");
+          setOpenSnackbar(true);
+        }
+      } catch (error) {
+        console.error("Error during registration:", error);
+        setSuccessMessage("An error occurred. Please try again.");
+        setOpenSnackbar(true);
+      }
     } else {
       setSuccessMessage("");
     }
   };
 
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
+
   return (
-    <div className="register-form">
-      <h2>Register</h2>
-      {successMessage && <p className="success-message">{successMessage}</p>}
+    <Box sx={{ maxWidth: 400, mx: 'auto', mt: 4, p: 3, border: '1px solid #ccc', borderRadius: '8px' }}>
+      <Typography variant="h4" component="h2" gutterBottom>
+        Register
+      </Typography>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Name</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-          />
-          {errors.name && <p className="error">{errors.name}</p>}
-        </div>
-        <div>
-          <label>Email</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-          {errors.email && <p className="error">{errors.email}</p>}
-        </div>
-        <div>
-          <label>Password</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-          />
-          {errors.password && <p className="error">{errors.password}</p>}
-        </div>
-        <div>
-          <label>Confirm Password</label>
-          <input
-            type="password"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-          />
-          {errors.confirmPassword && <p className="error">{errors.confirmPassword}</p>}
-        </div>
-        <button type="submit">Register</button>
+        <TextField
+          label="Name"
+          name="name"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={formData.name}
+          onChange={handleChange}
+          error={!!errors.name}
+          helperText={errors.name}
+        />
+        <TextField
+          label="Email"
+          name="email"
+          type="email"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={formData.email}
+          onChange={handleChange}
+          error={!!errors.email}
+          helperText={errors.email}
+        />
+        <TextField
+          label="Password"
+          name="password"
+          type="password"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={formData.password}
+          onChange={handleChange}
+          error={!!errors.password}
+          helperText={errors.password}
+        />
+        <TextField
+          label="Confirm Password"
+          name="confirmPassword"
+          type="password"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={formData.confirmPassword}
+          onChange={handleChange}
+          error={!!errors.confirmPassword}
+          helperText={errors.confirmPassword}
+        />
+        <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+          Register
+        </Button>
       </form>
-    </div>
+      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity={successMessage.includes("successful") ? "success" : "error"}>
+          {successMessage}
+        </Alert>
+      </Snackbar>
+    </Box>
   );
 };
 
