@@ -1,12 +1,11 @@
-import React from 'react';
-import Header from '../components/Header';
+import React from "react";
 
 const Home = () => {
-    return (
-        <div>
-            <Header />
-        </div>
-    );
+  return (
+    <div>
+      <h2 style={{ textAlign: "center" }}>Dobrodošli v naši aplikaciji!</h2>
+    </div>
+  );
 };
 
 export default Home;
