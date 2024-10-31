@@ -12,6 +12,7 @@ import {
 const RegisterForm = () => {
   const [formData, setFormData] = useState({
     name: "",
+    lastName: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -33,6 +34,7 @@ const RegisterForm = () => {
     let errors = {};
     if (!formData.name.trim()) errors.name = "Name is required";
     if (!formData.email.trim()) errors.email = "Email is required";
+    if (!formData.lastName.trim()) errors.lastName = "Last name is required";
     else if (!/\S+@\S+\.\S+/.test(formData.email)) errors.email = "Email is invalid";
     if (!formData.password) errors.password = "Password is required";
     else if (formData.password.length < 6) errors.password = "Password must be at least 6 characters";
@@ -48,9 +50,10 @@ const RegisterForm = () => {
     if (Object.keys(validationErrors).length === 0) {
       try {
         const user = {
-          name: formData.name,
+          ime: formData.name,
+          priimek: formData.lastName,
           email: formData.email,
-          password: formData.password,
+          geslo: formData.password,
         };
         const response = await addUser(user);
         if (response) {
@@ -58,6 +61,7 @@ const RegisterForm = () => {
           setOpenSnackbar(true);
           setFormData({
             name: "",
+            lastName: "",
             email: "",
             password: "",
             confirmPassword: "",
@@ -96,6 +100,17 @@ const RegisterForm = () => {
           onChange={handleChange}
           error={!!errors.name}
           helperText={errors.name}
+        />
+        <TextField
+          label="Last name"
+          name="lastName"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={formData.lastName}
+          onChange={handleChange}
+          error={!!errors.lastName}
+          helperText={errors.lastName}
         />
         <TextField
           label="Email"

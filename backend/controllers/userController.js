@@ -2,23 +2,22 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/userModel');
 
 exports.registerUser = async (req, res) => {
-    const { ime, priimek, email, geslo, tip_uporabnika } = req.body;
-
+    const { user } = req.body;
     try {
-        User.findByEmail(email, (err, results) => {
+        User.findByEmail(user.email, (err, results) => {
             if (results.length > 0) {
                 return res.status(400).json({ message: 'User already exists' });
             }
 
-            bcrypt.hash(geslo, 10, (err, hashedPassword) => {
+            bcrypt.hash(user.geslo, 10, (err, hashedPassword) => {
                 if (err) throw err;
 
                 const newUser = {
-                    ime,
-                    priimek,
-                    email,
+                    ime: user.ime,
+                    priimek: user.priimek,
+                    email: user.email,
                     geslo: hashedPassword,
-                    tip_uporabnika: tip_uporabnika || 'regular'
+                    tip_uporabnika_id: 1
                 };
 
                 User.create(newUser, (err, result) => {
