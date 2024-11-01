@@ -14,6 +14,11 @@ const User = {
     getAll: (callback) => {
         const query = `SELECT id, ime, priimek, email, tip_uporabnika_id FROM uporabnik`;
         db.query(query, callback);
+    },
+
+    findById: (id, callback) => {
+        const query = `SELECT id, ime, priimek, email FROM uporabnik WHERE id = ?`;
+       db.query(query, [id], callback);
     }
 };
 
