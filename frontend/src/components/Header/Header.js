@@ -53,29 +53,31 @@ const Header = () => {
   return (
     <AppBar position="static">
       <Toolbar>
-        <Typography variant="h6" style={{ marginRight: "16px" }}>
-          Vodenje dopustov
+        <Typography variant="h6" style={{ marginRight: "80px" }}>
+          Leave Management
         </Typography>
         <Button
           color="inherit"
           component={Link}
           to="/"
-          style={{ marginRight: "auto" }}
+          style={{ marginRight: "20px" }}
         >
-          Domov
+          Home
         </Button>
+        {user && (
+          <Button
+            color="inherit"
+            component={Link}
+            to="/request"
+            style={{ marginRight: "auto" }}
+          >
+            Request
+          </Button>
+        )}
         {loading ? (
           <CircularProgress color="inherit" style={{ marginLeft: "16px" }} />
         ) : user ? (
           <>
-            <Button
-              color="inherit"
-              component={Link}
-              to="/request"
-              style={{ marginRight: "16px" }}
-            >
-              Request
-            </Button>
             <Typography
               color="inherit"
               style={{ marginLeft: "16px", cursor: "pointer" }}
@@ -111,7 +113,7 @@ const Header = () => {
             </Menu>
           </>
         ) : (
-          <div>
+          <div style={{ marginLeft: "auto" }}>
             <Button
               color="inherit"
               component={Link}

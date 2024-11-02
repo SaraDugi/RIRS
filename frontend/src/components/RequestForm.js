@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { submitLeaveRequest } from "../api/requestApi";
 import {
   Box,
   Button,
@@ -7,40 +8,52 @@ import {
   MenuItem,
   Snackbar,
   Alert,
+  IconButton,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 const RequestForm = () => {
-  const [formData, setFormData] = useState({
-    type: "",
-    company: "",
-    message: "",
-    startDate: "",
-    endDate: "",
-  });
+  const [dopusti, setDopusti] = useState([
+    { startDate: "", endDate: "", razlog: "", tip: "" },
+  ]);
   const [successMessage, setSuccessMessage] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
-  const handleChange = (e) => {
+  const handleDopustChange = (index, e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    const newDopusti = [...dopusti];
+    newDopusti[index][name] = value;
+    setDopusti(newDopusti);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // logia za pošiljanje podatkov na strežnik
+  const addDopust = () => {
+    setDopusti([
+      ...dopusti,
+      { startDate: "", endDate: "", razlog: "", tip: "" },
+    ]);
+  };
 
-    setSuccessMessage("Request submitted successfully!");
-    setOpenSnackbar(true);
-    setFormData({
-      type: "",
-      company: "",
-      message: "",
-      startDate: "",
-      endDate: "",
-    });
+  const deleteDopust = (index) => {
+    const newDopusti = dopusti.filter((_, i) => i !== index);
+    setDopusti(newDopusti);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("Submitting request:", dopusti);
+
+    try {
+      const response = await submitLeaveRequest(dopusti);
+
+      if (response.status === 201) {
+        setSuccessMessage("Request submitted successfully!");
+        setOpenSnackbar(true);
+        setDopusti([{ startDate: "", endDate: "", razlog: "", tip: "" }]);
+      }
+    } catch (error) {
+      setSuccessMessage("Failed to submit request");
+      setOpenSnackbar(true);
+    }
   };
 
   const handleCloseSnackbar = () => {
@@ -59,64 +72,94 @@ const RequestForm = () => {
       }}
     >
       <Typography variant="h4" component="h2" gutterBottom>
-        Request Form
+        Leave Request Form
       </Typography>
       <form onSubmit={handleSubmit}>
-        <TextField
-          select
-          label="Type"
-          name="type"
+        {dopusti.map((dopust, index) => (
+          <Box
+            key={index}
+            sx={{
+              mb: 2,
+              border: "1px solid #ddd",
+              p: 2,
+              borderRadius: "8px",
+              position: "relative",
+            }}
+          >
+            <IconButton
+              sx={{
+                position: "absolute",
+                top: 2,
+                right: 2,
+                color: "red",
+                padding: "5px",
+                fontSize: "16px",
+              }}
+              onClick={() => deleteDopust(index)}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+
+            <TextField
+              label="Reason"
+              name="razlog"
+              fullWidth
+              margin="normal"
+              value={dopust.razlog}
+              onChange={(e) => handleDopustChange(index, e)}
+            />
+            <TextField
+              select
+              label="Leave Type"
+              name="tip"
+              fullWidth
+              margin="normal"
+              value={dopust.tip}
+              onChange={(e) => handleDopustChange(index, e)}
+              required
+            >
+              <MenuItem value="1">Vacation Leave</MenuItem>
+              <MenuItem value="2">Maternity Leave</MenuItem>
+              <MenuItem value="3">Paternity Leave</MenuItem>
+              <MenuItem value="4">Sick Leave</MenuItem>
+              <MenuItem value="5">Personal Leave</MenuItem>
+            </TextField>
+            <TextField
+              label="Start Date"
+              name="startDate"
+              type="date"
+              fullWidth
+              margin="normal"
+              value={dopust.startDate}
+              onChange={(e) => handleDopustChange(index, e)}
+              InputLabelProps={{ shrink: true }}
+              required
+            />
+            <TextField
+              label="End Date"
+              name="endDate"
+              type="date"
+              fullWidth
+              margin="normal"
+              value={dopust.endDate}
+              onChange={(e) => handleDopustChange(index, e)}
+              InputLabelProps={{ shrink: true }}
+              required
+            />
+          </Box>
+        ))}
+
+        <Button
+          type="button"
+          variant="outlined"
+          color="secondary"
+          onClick={addDopust}
           fullWidth
-          margin="normal"
-          value={formData.type}
-          onChange={handleChange}
-          required
+          sx={{ mt: 2 }}
         >
-          <MenuItem value="annual">Annual Leave</MenuItem>
-          <MenuItem value="sick">Sick Leave</MenuItem>
-          <MenuItem value="personal">Personal Leave</MenuItem>
-        </TextField>
-        <TextField
-          label="Company"
-          name="company"
-          fullWidth
-          margin="normal"
-          value={formData.company}
-          onChange={handleChange}
-          required
-        />
-        <TextField
-          label="Message"
-          name="message"
-          multiline
-          rows={4}
-          fullWidth
-          margin="normal"
-          value={formData.message}
-          onChange={handleChange}
-        />
-        <TextField
-          label="Start Date"
-          name="startDate"
-          type="date"
-          fullWidth
-          margin="normal"
-          value={formData.startDate}
-          onChange={handleChange}
-          InputLabelProps={{ shrink: true }}
-          required
-        />
-        <TextField
-          label="End Date"
-          name="endDate"
-          type="date"
-          fullWidth
-          margin="normal"
-          value={formData.endDate}
-          onChange={handleChange}
-          InputLabelProps={{ shrink: true }}
-          required
-        />
+          Add Another Leave
+        </Button>
+
         <Button
           type="submit"
           variant="contained"
@@ -127,6 +170,7 @@ const RequestForm = () => {
           Submit Request
         </Button>
       </form>
+
       <Snackbar
         open={openSnackbar}
         autoHideDuration={6000}
