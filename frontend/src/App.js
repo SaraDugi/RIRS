@@ -6,6 +6,8 @@ import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
 import AdminPrivilegesPage from "./pages/AdminPrivilegesPage";
 import AdminRequestsPage from "./pages/AdminRequestsPage";
+import RequestPage from "./pages/RequestPage";
+
 function App() {
   return (
     <Router>
@@ -16,6 +18,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/admin" element={<AdminPrivilegesPage />} />
         <Route path="/requests" element={<AdminRequestsPage />} />
+        <Route path="/request" element={<RequestPage />} />
       </Routes>
     </Layout>
   </Router>

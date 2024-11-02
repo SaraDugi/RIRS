@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { login } from '../api/userApi';
+import { login } from "../api/userApi";
 import {
   Box,
   Button,
   TextField,
   Typography,
   Snackbar,
-  Alert
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+  Alert,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -32,9 +32,11 @@ const LoginForm = () => {
   const validate = () => {
     let errors = {};
     if (!formData.email.trim()) errors.email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) errors.email = "Email is invalid";
+    else if (!/\S+@\S+\.\S+/.test(formData.email))
+      errors.email = "Email is invalid";
     if (!formData.password) errors.password = "Password is required";
-    else if (formData.password.length < 6) errors.password = "Password must be at least 6 characters";
+    else if (formData.password.length < 6)
+      errors.password = "Password must be at least 6 characters";
     return errors;
   };
 
@@ -46,20 +48,21 @@ const LoginForm = () => {
     if (Object.keys(validationErrors).length === 0) {
       try {
         const user = {
-            email: formData.email,
-            geslo: formData.password,
-          };
+          email: formData.email,
+          geslo: formData.password,
+        };
 
-          const response = await login(user);
-               
+        const response = await login(user);
+
         if (response) {
-          localStorage.setItem('token', response.token); // Store the token
+          localStorage.setItem("token", response.token); // Store the token
+          localStorage.setItem("userId", response.userId);
           setSuccessMessage("Login successful!");
           setOpenSnackbar(true);
           setFormData({
             email: "",
             password: "",
-          });      
+          });
           navigate("/");
         } else {
           setSuccessMessage("Login failed. Try again.");
@@ -80,7 +83,16 @@ const LoginForm = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 400, mx: 'auto', mt: 4, p: 3, border: '1px solid #ccc', borderRadius: '8px' }}>
+    <Box
+      sx={{
+        maxWidth: 400,
+        mx: "auto",
+        mt: 4,
+        p: 3,
+        border: "1px solid #ccc",
+        borderRadius: "8px",
+      }}
+    >
       <Typography variant="h4" component="h2" gutterBottom>
         Login
       </Typography>
@@ -109,12 +121,25 @@ const LoginForm = () => {
           error={!!errors.password}
           helperText={errors.password}
         />
-        <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth
+          sx={{ mt: 2 }}
+        >
           Login
         </Button>
       </form>
-      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
-        <Alert onClose={handleCloseSnackbar} severity={successMessage.includes("successful") ? "success" : "error"}>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={successMessage.includes("successful") ? "success" : "error"}
+        >
           {successMessage}
         </Alert>
       </Snackbar>
