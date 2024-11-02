@@ -12,12 +12,12 @@ export const getAllGroupedRequests = async () => {
     }
 };
 
-export const updateRequestStatus = async () => {
+export const updateRequestStatus = async (id, status) => {
     try {
-        const response = await axios.get(API_URL);
+        const response = await axios.put(`${API_URL}`, { id, status });
         return response.data;
     } catch (error) {
-        console.error('Error fetching requests:', error);
-        return [];
+        console.error('Error updating request status:', error);
+        return null;
     }
 };

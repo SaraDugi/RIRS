@@ -44,7 +44,19 @@ const AdminRequests = () => {
     };
 
     const handleStatusChange = async (event, request) => {
-
+        const newStatus = event.target.value;
+        const requestId = request.id;
+        try {
+            await updateRequestStatus(requestId, newStatus);
+            setRequests((prevRequests) =>
+                prevRequests.map((req) =>
+                    req.id === requestId ? { ...req, stanje: newStatus } : req
+                )
+            );
+            console.log("Status updated successfully");
+        } catch (error) {
+            console.error('Error updating status:', error);
+        }
     };
 
     return (              

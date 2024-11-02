@@ -3,8 +3,9 @@ const db = require('../db');
 const Request = {
 
     getAllGrouped: (callback) => {
-        const query = `SELECT 
+        const query = `SELECT     
     u.email,
+    z.id,
     z.datum_zahteve,
     z.stanje,
     z.komentar,
@@ -28,6 +29,11 @@ GROUP BY
     z.id, u.email, z.datum_zahteve, z.stanje, z.komentar;`;
         db.query(query, callback);
     },
+
+    update: (id, stanje, callback) => {
+        const query = `UPDATE zahteva SET stanje = ? WHERE id = ?`;
+        db.query(query, [stanje, id], callback);
+    }
 
 };
 
