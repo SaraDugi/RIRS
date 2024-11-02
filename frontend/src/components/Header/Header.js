@@ -65,12 +65,12 @@ const Header = () => {
           
           <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
-              {user.type && (
+              {user.type!==1 && (
                 <MenuItem component={Link} to="/admin" onClick={handleMenuClose}>
                   Users
                 </MenuItem>
               )}
-              {user.type && (
+              {user.type !==1 && (
                 <MenuItem component={Link} to="/requests" onClick={handleMenuClose}>
                   Requests
                 </MenuItem>

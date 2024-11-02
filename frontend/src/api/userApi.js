@@ -59,3 +59,13 @@ export const fetchLoggedInUser = async () => {
     console.log("Invalid token");
     return null;
 };
+
+export const toggleAdmin = async (id) => { 
+    try {
+        const response = await axios.put(`${API_URL}/toggle/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error toggling user type:', error);
+        return null;
+    }
+};
