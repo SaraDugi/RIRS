@@ -8,6 +8,7 @@ import {
   Snackbar,
   Alert
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const RegisterForm = () => {
   const [formData, setFormData] = useState({
@@ -21,6 +22,7 @@ const RegisterForm = () => {
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -66,6 +68,7 @@ const RegisterForm = () => {
             password: "",
             confirmPassword: "",
           });
+          navigate("/login");
         } else {
           setSuccessMessage("Registration failed. Try again.");
           setOpenSnackbar(true);
