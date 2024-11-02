@@ -68,7 +68,8 @@ exports.loginUser = async (req, res) => {
                     id: userFromDb.id, 
                     email: userFromDb.email, 
                     name: userFromDb.ime, 
-                    lastName: userFromDb.priimek 
+                    lastName: userFromDb.priimek,
+                    type: userFromDb.tip_uporabnika_id
                 }, 
                 "process.env.JWT_SECRET",
                 { expiresIn: '1h' } 
