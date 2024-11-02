@@ -17,8 +17,16 @@ const User = {
     },
 
     findById: (id, callback) => {
-        const query = `SELECT id, ime, priimek, email FROM uporabnik WHERE id = ?`;
-       db.query(query, [id], callback);
+        const query = `SELECT id, ime, priimek, email, tip_uporabnika_id FROM uporabnik WHERE id = ?`;
+        db.query(query, [id], (err, results) => {
+            if (err) return callback(err);
+            callback(null, results[0]);
+        });
+    },
+
+    update: (id, tip_uporabnika_id, callback) => {
+        const query = `UPDATE uporabnik SET tip_uporabnika_id = ? WHERE id = ?`;
+        db.query(query, [tip_uporabnika_id, id], callback);
     }
 };
 

@@ -7,4 +7,5 @@ router.post('/', userController.registerUser);
 router.get('/', userController.getAllUsers);
 router.post('/login', userController.loginUser);
 router.get('/loggedIn', verifyToken, userController.getLoggedInUser);
+router.put('/toggle/:id', userController.toggleUserTypeById);
 module.exports = router;
