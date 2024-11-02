@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
 import AdminPrivilegesPage from "./pages/AdminPrivilegesPage";
+import AdminRequestsPage from "./pages/AdminRequestsPage";
 function App() {
   return (
     <Router>
@@ -14,7 +15,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/admin" element={<AdminPrivilegesPage />} />
-        <Route path="/requests" element={<Home />} />
+        <Route path="/requests" element={<AdminRequestsPage />} />
       </Routes>
     </Layout>
   </Router>
