@@ -8,6 +8,7 @@ import {
   Snackbar,
   Alert
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -18,6 +19,7 @@ const LoginForm = () => {
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,9 +51,7 @@ const LoginForm = () => {
           };
 
           const response = await login(user);
-          
-           
-          
+               
         if (response) {
           localStorage.setItem('token', response.token); // Store the token
           setSuccessMessage("Login successful!");
@@ -59,7 +59,8 @@ const LoginForm = () => {
           setFormData({
             email: "",
             password: "",
-          });
+          });      
+          navigate("/");
         } else {
           setSuccessMessage("Login failed. Try again.");
           setOpenSnackbar(true);

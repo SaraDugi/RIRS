@@ -52,6 +52,7 @@ export const fetchLoggedInUser = async () => {
             name: decodedToken.name,
             lastName: decodedToken.lastName,
             email: decodedToken.email,
+            type: decodedToken.type
         };
     }
 
