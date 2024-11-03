@@ -1,9 +1,8 @@
-const db = require('../db');
+const db = require("../db");
 
 const Request = {
-
-    getAllGrouped: (callback) => {
-        const query = `SELECT     
+  getAllGrouped: (callback) => {
+    const query = `SELECT     
     u.email,
     z.id,
     z.datum_zahteve,
@@ -27,15 +26,35 @@ JOIN
     tip_dopusta td ON d.tip_dopusta_id = td.id
 GROUP BY 
     z.id, u.email, z.datum_zahteve, z.stanje, z.komentar;`;
-        db.query(query, callback);
-    },
+    db.query(query, callback);
+  },
 
-    update: (id, stanje, callback) => {
-        const query = `UPDATE zahteva SET stanje = ? WHERE id = ?`;
-        db.query(query, [stanje, id], callback);
-    },
+  getAllLeaves: (callback) => {
+    const query = `
+      SELECT 
+        u.ime,
+        u.priimek,
+        td.tip AS tip_dopusta,
+        d.zacetek,
+        d.konec
+      FROM 
+        dopust d
+      JOIN 
+        zahteva z ON d.zahteva_id = z.id
+      JOIN 
+        uporabnik u ON u.id = z.uporabnik_id
+      JOIN 
+        tip_dopusta td ON d.tip_dopusta_id = td.id;
+    `;
+    db.query(query, callback);
+  },
 
-   create: (requestData, callback) => {
+  update: (id, stanje, callback) => {
+    const query = `UPDATE zahteva SET stanje = ? WHERE id = ?`;
+    db.query(query, [stanje, id], callback);
+  },
+
+  create: (requestData, callback) => {
     const query = `INSERT INTO zahteva (komentar, uporabnik_id, datum_zahteve, stanje) VALUES (?, ?, ?, ?)`;
     db.query(
       query,
@@ -63,7 +82,6 @@ GROUP BY
       callback
     );
   },
-  
 };
 
 module.exports = Request;
