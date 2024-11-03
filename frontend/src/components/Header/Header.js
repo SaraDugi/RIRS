@@ -51,7 +51,7 @@ const Header = () => {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ marginBottom: "30px", padding: "10px" }}>
       <Toolbar>
         <Typography variant="h6" style={{ marginRight: "80px" }}>
           Leave Management
