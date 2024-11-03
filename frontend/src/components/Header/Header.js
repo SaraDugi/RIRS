@@ -65,14 +65,24 @@ const Header = () => {
           Home
         </Button>
         {user && (
-          <Button
-            color="inherit"
-            component={Link}
-            to="/request"
-            style={{ marginRight: "auto" }}
-          >
-            Request
-          </Button>
+          <>
+            <Button
+              color="inherit"
+              component={Link}
+              to="/leaves" 
+              style={{ marginRight: "auto" }}
+            >
+              Leaves
+            </Button>
+            <Button
+              color="inherit"
+              component={Link}
+              to="/request"
+              style={{ marginRight: "20px" }}
+            >
+              Add new
+            </Button>
+          </>
         )}
         {loading ? (
           <CircularProgress color="inherit" style={{ marginLeft: "16px" }} />
