@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { addUser } from '../api/userApi';
+import { addUser } from "../api/userApi";
 import {
   Box,
   Button,
   TextField,
   Typography,
   Snackbar,
-  Alert
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+  Alert,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const RegisterForm = () => {
   const [formData, setFormData] = useState({
@@ -37,10 +37,13 @@ const RegisterForm = () => {
     if (!formData.name.trim()) errors.name = "Name is required";
     if (!formData.email.trim()) errors.email = "Email is required";
     if (!formData.lastName.trim()) errors.lastName = "Last name is required";
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) errors.email = "Email is invalid";
+    else if (!/\S+@\S+\.\S+/.test(formData.email))
+      errors.email = "Email is invalid";
     if (!formData.password) errors.password = "Password is required";
-    else if (formData.password.length < 6) errors.password = "Password must be at least 6 characters";
-    if (formData.password !== formData.confirmPassword) errors.confirmPassword = "Passwords do not match";
+    else if (formData.password.length < 6)
+      errors.password = "Password must be at least 6 characters";
+    if (formData.password !== formData.confirmPassword)
+      errors.confirmPassword = "Passwords do not match";
     return errors;
   };
 
@@ -88,7 +91,17 @@ const RegisterForm = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 400, mx: 'auto', mt: 4, p: 3, border: '1px solid #ccc', borderRadius: '8px' }}>
+    <Box
+      sx={{
+        maxWidth: 400,
+        mx: "auto",
+        mt: 4,
+        p: 3,
+        border: "1px solid #ccc",
+        borderRadius: "8px",
+        marginBottom: "50px",
+      }}
+    >
       <Typography variant="h4" component="h2" gutterBottom>
         Register
       </Typography>
@@ -151,12 +164,25 @@ const RegisterForm = () => {
           error={!!errors.confirmPassword}
           helperText={errors.confirmPassword}
         />
-        <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth
+          sx={{ mt: 2 }}
+        >
           Register
         </Button>
       </form>
-      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
-        <Alert onClose={handleCloseSnackbar} severity={successMessage.includes("successful") ? "success" : "error"}>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={successMessage.includes("successful") ? "success" : "error"}
+        >
           {successMessage}
         </Alert>
       </Snackbar>
