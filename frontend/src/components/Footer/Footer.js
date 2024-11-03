@@ -1,11 +1,43 @@
 import React from "react";
-import "./Footer.css";
+import { Link } from "react-router-dom";
+import { AppBar, Toolbar, Typography, Button, Container } from "@mui/material";
 
 const Footer = () => {
   return (
-    <footer className="footer">
-      <p>© 2024 Vodenje dopustov</p>
-    </footer>
+    <AppBar
+      position="static"
+      color="primary"
+      sx={{ padding: "20px 0", marginTop: "auto" }}
+    >
+      <Container maxWidth="md">
+        <Toolbar sx={{ justifyContent: "center" }}>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/"
+            sx={{ textTransform: "none", fontSize: "16px", mx: 2 }}
+          >
+            Home
+          </Button>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/request"
+            sx={{ textTransform: "none", fontSize: "16px", mx: 2 }}
+          >
+            Request
+          </Button>
+        </Toolbar>
+        <Typography
+          variant="body2"
+          color="inherit"
+          align="center"
+          sx={{ marginTop: "10px", fontSize: "14px" }}
+        >
+          © 2024 Leave Management. All rights reserved.
+        </Typography>
+      </Container>
+    </AppBar>
   );
 };
 

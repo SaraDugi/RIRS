@@ -69,6 +69,7 @@ const RequestForm = () => {
         p: 3,
         border: "1px solid #ccc",
         borderRadius: "8px",
+        marginBottom: "50px",
       }}
     >
       <Typography variant="h4" component="h2" gutterBottom>
