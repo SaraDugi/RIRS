@@ -41,7 +41,7 @@ exports.createRequest = (req, res) => {
     const newRequest = {
       uporabnik_id: userId,
       datum_zahteve: new Date(),
-      komentar: "",
+      komentar: "/",
       stanje: "in progress",
     };
 
@@ -82,6 +82,19 @@ exports.getAllLeaves = (req, res) => {
       return res
         .status(500)
         .json({ message: "Failed to retrieve leave requests" });
+    }
+    res.status(200).json(results);
+  });
+};
+
+exports.getRequestsByUser = (req, res) => {
+  const userId = req.userId;
+
+  Request.getRequestsByUserId(userId, (err, results) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "Failed to retrieve user's requests" });
     }
     res.status(200).json(results);
   });
