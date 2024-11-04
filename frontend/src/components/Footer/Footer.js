@@ -7,7 +7,7 @@ const Footer = () => {
     <AppBar
       position="static"
       color="primary"
-      sx={{ padding: "20px 0", marginTop: "auto" }}
+      sx={{ padding: "20px 0", marginTop: "75px" }}
     >
       <Container maxWidth="md">
         <Toolbar sx={{ justifyContent: "center" }}>

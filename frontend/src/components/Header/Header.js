@@ -69,8 +69,16 @@ const Header = () => {
             <Button
               color="inherit"
               component={Link}
-              to="/leaves" 
-              style={{ marginRight: "auto" }}
+              to="/dashboard"
+              style={{ marginRight: "20px" }}
+            >
+              Dashboard
+            </Button>
+            <Button
+              color="inherit"
+              component={Link}
+              to="/leaves"
+              style={{ marginRight: "20px" }}
             >
               Leaves
             </Button>
@@ -78,7 +86,7 @@ const Header = () => {
               color="inherit"
               component={Link}
               to="/request"
-              style={{ marginRight: "20px" }}
+              style={{ marginRight: "auto" }}
             >
               Add new
             </Button>

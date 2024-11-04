@@ -58,7 +58,7 @@ const LeavesTable = ({ leaves }) => {
         border: "1px solid #ccc",
         borderRadius: "8px",
         boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-        marginTop: "65px",
+        marginTop: "40px",
       }}
     >
       <Stack direction="row" spacing={2} sx={{ mb: 4 }} alignItems="center">
