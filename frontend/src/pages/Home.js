@@ -4,7 +4,7 @@ import { Typography, Container, Grid, Button, Paper } from "@mui/material";
 const Home = () => {
   return (
     <div>
-      <Container maxWidth="lg" style={{ marginTop: "60px" }}>
+      <Container maxWidth="lg" style={{ marginTop: "40px" }}>
         <Typography variant="h4" align="center" gutterBottom>
           Welcome to our Leave Management Application!
         </Typography>
@@ -53,7 +53,7 @@ const Home = () => {
               <Paper
                 style={{
                   padding: "20px",
-                  minHeight: "100px", // Set a higher min height for uniform height
+                  minHeight: "100px",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",

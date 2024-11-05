@@ -91,6 +91,7 @@ const LoginForm = () => {
         p: 3,
         border: "1px solid #ccc",
         borderRadius: "8px",
+        marginTop: "56px",
       }}
     >
       <Typography variant="h4" component="h2" gutterBottom>

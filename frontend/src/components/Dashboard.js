@@ -3,8 +3,6 @@ import { getUserRequests } from "../api/requestApi";
 import {
   Container,
   Typography,
-  Card,
-  CardContent,
   CircularProgress,
   Table,
   TableBody,
@@ -13,15 +11,19 @@ import {
   TableHead,
   TableRow,
   Paper,
-  TextField,
   Box,
-  Grid,
+  Button,
+  Stack,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 
 const Dashboard = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedType, setSelectedType] = useState("");
 
   useEffect(() => {
     const fetchUserRequests = async () => {
@@ -34,18 +36,22 @@ const Dashboard = () => {
         setLoading(false);
       }
     };
-
     fetchUserRequests();
   }, []);
 
-  // Filter requests based on search query
-  const filteredRequests = requests.filter(
-    (request) =>
-      request.stanje.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      request.dopusti.some((leave) =>
-        leave.tip_dopusta.toLowerCase().includes(searchQuery.toLowerCase())
+  const leaveTypes = [
+    ...new Set(
+      requests.flatMap((request) =>
+        request.dopusti.map((leave) => leave.tip_dopusta)
       )
-  );
+    ),
+  ];
+
+  const filteredRequests = selectedType
+    ? requests.filter((request) =>
+        request.dopusti.some((leave) => leave.tip_dopusta === selectedType)
+      )
+    : requests;
 
   if (loading)
     return (
@@ -55,60 +61,91 @@ const Dashboard = () => {
     );
 
   return (
-    <Container maxWidth="md">
-      <Typography variant="h4" gutterBottom align="center" mt={4}>
-        Your Leave Requests
-      </Typography>
-      <TextField
-        label="Search by Status or Leave Type"
-        variant="outlined"
-        fullWidth
-        sx={{ mb: 4 }}
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
-      <Grid container spacing={2}>
-        {filteredRequests.map((request) => (
-          <Grid item xs={12} key={request.id}>
-            <Card sx={{ mb: 2, borderRadius: 2, boxShadow: 3 }}>
-              <CardContent>
-                <Typography variant="h6" sx={{ mb: 1 }}>
-                  Request Date:{" "}
-                  {new Date(request.datum_zahteve).toLocaleDateString()}
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  Status: {request.stanje}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Comment: {request.komentar}
-                </Typography>
-                <TableContainer component={Paper} sx={{ mt: 2 }}>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Leave Type</TableCell>
-                        <TableCell>Start Date</TableCell>
-                        <TableCell>End Date</TableCell>
-                        <TableCell>Reason</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {request.dopusti.map((leave, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{leave.tip_dopusta}</TableCell>
-                          <TableCell>{leave.zacetek}</TableCell>
-                          <TableCell>{leave.konec}</TableCell>
-                          <TableCell>{leave.razlog}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+    <Container
+      sx={{
+        bgcolor: "#fafafa",
+        padding: 2,
+        borderRadius: 2,
+        border: "1px solid #ccc",
+        boxShadow: 1,
+        width: 1000,
+        mt: 4,
+        marginTop: "40px",
+      }}
+    >
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+      >
+        <Typography variant="h5">Dashboard - My Data</Typography>
+        <Button variant="outlined" size="small" href="/request">
+          Request Form
+        </Button>
+      </Box>
+
+      <Stack direction="row" spacing={2} sx={{ mb: 3 }} alignItems="center">
+        <FormControl fullWidth variant="outlined" size="small">
+          <InputLabel>Filter by Leave Type</InputLabel>
+          <Select
+            value={selectedType}
+            onChange={(e) => setSelectedType(e.target.value)}
+            label="Filter by Leave Type"
+          >
+            <MenuItem value="">
+              <em>All Types</em>
+            </MenuItem>
+            {leaveTypes.map((type) => (
+              <MenuItem key={type} value={type}>
+                {type}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Stack>
+
+      <TableContainer component={Paper} sx={{ maxHeight: 400, width: "100%" }}>
+        <Table stickyHeader>
+          <TableHead>
+            <TableRow sx={{ bgcolor: "#e0e0e0" }}>
+              <TableCell>
+                <strong>Type</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Start Date</strong>
+              </TableCell>
+              <TableCell>
+                <strong>End Date</strong>
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredRequests.map((request, index) =>
+              request.dopusti
+                .filter((leave) =>
+                  selectedType ? leave.tip_dopusta === selectedType : true
+                )
+                .map((leave, idx) => (
+                  <TableRow
+                    key={`${index}-${idx}`}
+                    sx={{
+                      "&:nth-of-type(odd)": { backgroundColor: "#f9f9f9" },
+                    }}
+                  >
+                    <TableCell>{leave.tip_dopusta}</TableCell>
+                    <TableCell>
+                      {new Date(leave.zacetek).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      {new Date(leave.konec).toLocaleDateString()}
+                    </TableCell>
+                  </TableRow>
+                ))
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Container>
   );
 };
