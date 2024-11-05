@@ -110,6 +110,26 @@ GROUP BY
     `;
     db.query(query, [userId], callback);
   },
+  getLeaveStatsByUser: (callback) => {
+    const query = `
+      SELECT 
+        u.ime, 
+        u.priimek,
+        SUM(DATEDIFF(d.konec, d.zacetek) + 1) AS odobreniDopusti, 
+        LEAST(SUM(DATEDIFF(d.konec, d.zacetek) + 1), 30) AS skupniDopusti
+      FROM 
+        zahteva z
+      JOIN 
+        uporabnik u ON u.id = z.uporabnik_id
+      JOIN 
+        dopust d ON d.zahteva_id = z.id  -- Priključite tabelo dopust
+      WHERE 
+        z.stanje = 'Accepted'
+      GROUP BY 
+        u.id;
+    `;
+    db.query(query, callback);
+  },
 };
 
 module.exports = Request;

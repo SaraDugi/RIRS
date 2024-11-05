@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getAllLeaves } from "../api/requestApi";
 import LeavesTable from "../components/LeavesTable";
+import ApprovalChart from "../components/ApprovalChart";
 
 const LeavesTablePage = () => {
   const [leaves, setLeaves] = useState([]);
@@ -17,6 +18,7 @@ const LeavesTablePage = () => {
   return (
     <div>
       <LeavesTable leaves={leaves} />
+      <ApprovalChart />
     </div>
   );
 };

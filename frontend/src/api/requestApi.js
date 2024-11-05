@@ -64,3 +64,12 @@ export const getUserRequests = async () => {
     throw error;
   }
 };
+export const getUserRequestStatuses = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/user-request-statuses`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user request statuses:", error);
+    return [];
+  }
+};

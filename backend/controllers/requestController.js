@@ -99,3 +99,13 @@ exports.getRequestsByUser = (req, res) => {
     res.status(200).json(results);
   });
 };
+exports.getLeaveStatsByUser = (req, res) => {
+  Request.getLeaveStatsByUser((err, results) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "Failed to retrieve leave stats" });
+    }
+    res.status(200).json(results);
+  });
+};
