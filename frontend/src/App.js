@@ -8,6 +8,7 @@ import AdminPrivilegesPage from "./pages/AdminPrivilegesPage";
 import AdminRequestsPage from "./pages/AdminRequestsPage";
 import RequestPage from "./pages/RequestPage";
 import LeavesTablePage from "./pages/LeavesTablePage";
+import DashboardPage from "./pages/DashboardPage";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/requests" element={<AdminRequestsPage />} />
           <Route path="/request" element={<RequestPage />} />
           <Route path="/leaves" element={<LeavesTablePage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
         </Routes>
       </Layout>
     </Router>
