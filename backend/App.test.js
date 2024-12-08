@@ -17,7 +17,7 @@ const createDbPool = () => {
         queueLimit: 0,
     });
 };
-const db = createDbPool(); 
+const db = createDbPool();
 
 test('morajo biti določene vse zahtevane okoljske spremenljivke', () => {
     const requiredEnvVars = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME', 'PORT'];
@@ -92,8 +92,6 @@ test('mora vrniti napako za napačne podatke POST zahteve na napačni poti DELET
     const response = await request(app).delete('/api/requests').send({});
     expect(response.status).toBe(404);
 });
-
-const db = require('./db');
 
 afterAll(async () => {
     try {
