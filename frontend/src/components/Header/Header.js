@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import "./Header.css";
 import { fetchLoggedInUser } from "../../api/userApi";
 import {
   AppBar,
@@ -86,9 +85,17 @@ const Header = () => {
               color="inherit"
               component={Link}
               to="/request"
-              style={{ marginRight: "auto" }}
+              style={{ marginRight: "20px" }}
             >
               Add new
+            </Button>
+            <Button
+              color="inherit"
+              component={Link}
+              to="/notifications"
+              style={{ marginRight: "auto" }}
+            >
+              Notifications
             </Button>
           </>
         )}

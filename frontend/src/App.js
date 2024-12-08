@@ -9,6 +9,7 @@ import AdminRequestsPage from "./pages/AdminRequestsPage";
 import RequestPage from "./pages/RequestPage";
 import LeavesTablePage from "./pages/LeavesTablePage";
 import DashboardPage from "./pages/DashboardPage";
+import NotificationPage from "./pages/NotificationPage";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/request" element={<RequestPage />} />
           <Route path="/leaves" element={<LeavesTablePage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/notifications" element={<NotificationPage />} />
         </Routes>
       </Layout>
     </Router>
