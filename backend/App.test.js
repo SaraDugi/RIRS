@@ -1,5 +1,5 @@
 const dotenv = require('dotenv');
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 const request = require('supertest');
 const app = require('./server'); 
 
