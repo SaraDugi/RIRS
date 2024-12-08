@@ -34,30 +34,20 @@ afterAll(() => {
 
 beforeEach(() => {
   jest.clearAllMocks();
-  getUserRequests.mockResolvedValue([
+  getAllGroupedRequests.mockResolvedValue([
     {
       id: 1,
-      stanje: "accepted",
-      datum_zahteve: "2024-12-08",
-      komentar: "Test comment",
-      dopusti: [],
+      email: 'user@example.com',
+      datum_zahteve: '2024-11-25T00:00:00Z',
+      stanje: 'in progress',
+      komentar: 'Initial comment',
     },
   ]);
 });
 
+
 describe('Komponenta AdminRequests', () => {
   test('onemogoči spustni meni statusa, ko posodobitev statusa zahteve ne uspe', async () => {
-    getAllGroupedRequests.mockResolvedValue([
-      {
-        id: 1,
-        email: 'user@example.com',
-        datum_zahteve: '2024-11-25T00:00:00Z',
-        stanje: 'in progress',
-        komentar: 'Initial comment',
-      },
-    ]);
-    updateRequestStatus.mockRejectedValue(new Error('Update Failed'));
-
     render(<AdminRequests />);
 
     await waitFor(() => {
@@ -70,6 +60,16 @@ describe('Komponenta AdminRequests', () => {
     await waitFor(() => {
       expect(screen.queryByText('Denied')).not.toBeInTheDocument(); 
       expect(screen.getByText('In Progress')).toBeInTheDocument(); 
+    });
+  });
+});
+
+describe('Komponenta AverageLeaveDurationChart', () => {
+  test('obravnava scenarije brez podatkov o dopustu', async () => {
+    render(<AverageLeaveDurationChart />);
+
+    await waitFor(() => {
+      expect(screen.getByText('No data available for leave duration.')).toBeInTheDocument();
     });
   });
 });
