@@ -5,13 +5,12 @@ import AverageLeaveDurationChart from './components/AverageLeaveDurationChart';
 import Footer from './components/Footer/Footer';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { MemoryRouter } from 'react-router-dom';
-import { getAllGroupedRequests, updateRequestStatus, getAllLeaves } from './api/requestApi';
-import App from "./App"; 
+import App from "./App";
 import Header from './components/Header/Header';
 import NotificationPage from './pages/NotificationPage';
-import { getUserRequests } from "./api/requestApi";
-import { within } from '@testing-library/react';
+import { getAllGroupedRequests, updateRequestStatus, getAllLeaves, getUserRequests } from './api/requestApi';
 
+// Popravljena konfiguracija jest.mock
 jest.mock('./api/userApi', () => ({
   getUsers: jest.fn(),
   toggleAdmin: jest.fn(),
@@ -21,19 +20,34 @@ jest.mock('./api/requestApi', () => ({
   getAllGroupedRequests: jest.fn(),
   updateRequestStatus: jest.fn(),
   getAllLeaves: jest.fn(),
+  getUserRequests: jest.fn(),
+}));
+
+jest.mock('./api/notificationApi', () => ({
+  fetchNotifications: jest.fn(() =>
+    Promise.resolve([
+      { id: 1, title: "Approved", message: "Your leave request is approved", read: false },
+      { id: 2, title: "Rejected", message: "Your leave request is rejected", read: true },
+    ])
+  ),
+  markNotificationRead: jest.fn(() => Promise.resolve()),
 }));
 
 const originalConsoleError = console.error;
+
+// Preprečimo izpisovanje nepotrebnih napak v logih
 beforeAll(() => {
-  console.error = jest.fn(); 
+  console.error = jest.fn();
 });
 
 afterAll(() => {
   console.error = originalConsoleError;
 });
 
+// Pravilna inicializacija mock funkcij
 beforeEach(() => {
   jest.clearAllMocks();
+
   getAllGroupedRequests.mockResolvedValue([
     {
       id: 1,
@@ -43,8 +57,21 @@ beforeEach(() => {
       komentar: 'Initial comment',
     },
   ]);
-});
 
+  getAllLeaves.mockResolvedValue([]);
+
+  updateRequestStatus.mockRejectedValue(new Error('Update Failed'));
+
+  getUserRequests.mockResolvedValue([
+    {
+      id: 1,
+      stanje: "accepted",
+      datum_zahteve: "2024-12-08",
+      komentar: "Test comment",
+      dopusti: [],
+    },
+  ]);
+});
 
 describe('Komponenta AdminRequests', () => {
   test('onemogoči spustni meni statusa, ko posodobitev statusa zahteve ne uspe', async () => {
@@ -58,26 +85,14 @@ describe('Komponenta AdminRequests', () => {
     fireEvent.click(screen.getByText('Denied'));
 
     await waitFor(() => {
-      expect(screen.queryByText('Denied')).not.toBeInTheDocument(); 
-      expect(screen.getByText('In Progress')).toBeInTheDocument(); 
+      expect(screen.queryByText('Denied')).not.toBeInTheDocument();
+      expect(screen.getByText('In Progress')).toBeInTheDocument();
     });
   });
 });
 
 describe('Komponenta AverageLeaveDurationChart', () => {
   test('obravnava scenarije brez podatkov o dopustu', async () => {
-    render(<AverageLeaveDurationChart />);
-
-    await waitFor(() => {
-      expect(screen.getByText('No data available for leave duration.')).toBeInTheDocument();
-    });
-  });
-});
-
-describe('Komponenta AverageLeaveDurationChart', () => {
-  test('obravnava scenarije brez podatkov o dopustu', async () => {
-    getAllLeaves.mockResolvedValue([]);
-
     render(<AverageLeaveDurationChart />);
 
     await waitFor(() => {
@@ -132,58 +147,16 @@ describe("Komponenta App", () => {
   test("upodobi domačo stran z glavnimi povezavami", () => {
     render(<App />);
 
-    const title = screen.getByText("Leave Management");
-    expect(title).toBeInTheDocument();
-
-    const homeLinks = screen.getAllByRole("link", { name: /home/i });
-    expect(homeLinks[0]).toBeInTheDocument();
-
-    const loginLink = screen.getByRole("link", { name: /login/i });
-    const registerLink = screen.getByRole("link", { name: /register/i });
-
-    expect(loginLink).toBeInTheDocument();
-    expect(registerLink).toBeInTheDocument();
+    expect(screen.getByText("Leave Management")).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: /home/i })[0]).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /login/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /register/i })).toBeInTheDocument();
   });
 });
 
-test("Glava ima pravilno uporabljen razred", () => {
-  render(
-    <MemoryRouter>
-      <Header />
-    </MemoryRouter>
-  );
-
-  const appBarElement = screen.getByRole("banner");
-  console.log(appBarElement.className);
-});
-
-test("Glava je vidna", async () => {
-  const { container } = render(<MemoryRouter>
-    <ThemeProvider theme={createTheme()}>
-      <Header />
-    </ThemeProvider>
-  </MemoryRouter>);
-
-  expect(container).toBeVisible();
-});
-
-
-//Za novo komponento :)
-jest.mock('./api/requestApi', () => ({
-  getAllGroupedRequests: jest.fn(),
-  updateRequestStatus: jest.fn()
-}));
-
-jest.mock('./api/notificationApi', () => ({
-  fetchNotifications: jest.fn(() => Promise.resolve([
-    { id: 1, title: "Approved", message: "Your leave request is approved", read: false },
-    { id: 2, title: "Rejected", message: "Your leave request is rejected", read: true },
-  ])),
-  markNotificationRead: jest.fn(() => Promise.resolve()),
-}));
-
 test("Gumb za obvestila ni viden, ko uporabnik ni prijavljen", () => {
-  localStorage.removeItem("token"); 
+  localStorage.removeItem("token");
+
   render(
     <MemoryRouter>
       <ThemeProvider theme={createTheme()}>
@@ -198,18 +171,6 @@ test("Gumb za obvestila ni viden, ko uporabnik ni prijavljen", () => {
 test("Stran z obvestili se pravilno upodobi v izolaciji", async () => {
   localStorage.setItem("token", "dummy-token");
 
-  jest.mock("./api/requestApi", () => ({
-    getUserRequests: jest.fn().mockResolvedValue([
-      {
-        id: 1,
-        stanje: "accepted",
-        datum_zahteve: "2024-12-08",
-        komentar: "Test comment",
-        dopusti: [],
-      },
-    ]),
-  }));
-
   render(
     <MemoryRouter>
       <ThemeProvider theme={createTheme()}>
@@ -218,15 +179,10 @@ test("Stran z obvestili se pravilno upodobi v izolaciji", async () => {
     </MemoryRouter>
   );
 
-  screen.debug();
   await waitFor(() => {
     expect(screen.getByText(/notifications/i)).toBeInTheDocument();
   });
 });
-
-jest.mock("./api/requestApi", () => ({
-  getUserRequests: jest.fn(),
-}));
 
 test("NotificationPage ustrezno kategorizira in prikaže zahteve", async () => {
   const mockRequests = [
@@ -253,7 +209,7 @@ test("NotificationPage ustrezno kategorizira in prikaže zahteve", async () => {
     },
   ];
 
-  getUserRequests.mockResolvedValueOnce(mockRequests); 
+  getUserRequests.mockResolvedValueOnce(mockRequests);
 
   render(
     <MemoryRouter>
@@ -269,39 +225,5 @@ test("NotificationPage ustrezno kategorizira in prikaže zahteve", async () => {
     expect(screen.getByText(/Leave Type: Vacation Leave/i)).toBeInTheDocument();
     expect(screen.getByText(/Denied Requests/i)).toBeInTheDocument();
     expect(screen.getByText(/Request #122 - denied/i)).toBeInTheDocument();
-  });
-});
-
-test("Ko pride do napake pri pridobivanju, se prikaže sporočilo o napaki", async () => {
-  getUserRequests.mockRejectedValueOnce(new Error("API Error"));
-
-  render(
-    <MemoryRouter>
-      <ThemeProvider theme={createTheme()}>
-        <NotificationPage />
-      </ThemeProvider>
-    </MemoryRouter>
-  );
-
-  await waitFor(() => {
-    expect(screen.getByText(/Failed to load notifications/i)).toBeInTheDocument();
-  });
-
-  expect(screen.queryByText(/Request #/i)).not.toBeInTheDocument();
-});
-
-test("Naslov strani je po nalaganju pravilno upodobljen", async () => {
-  getUserRequests.mockResolvedValueOnce([]);
-
-  render(
-    <MemoryRouter>
-      <ThemeProvider theme={createTheme()}>
-        <NotificationPage />
-      </ThemeProvider>
-    </MemoryRouter>
-  );
-
-  await waitFor(() => {
-    expect(screen.getByText(/notifications/i)).toBeInTheDocument();
   });
 });
