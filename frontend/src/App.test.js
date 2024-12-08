@@ -10,7 +10,6 @@ import Header from './components/Header/Header';
 import NotificationPage from './pages/NotificationPage';
 import { getAllGroupedRequests, updateRequestStatus, getAllLeaves, getUserRequests } from './api/requestApi';
 
-// Popravljena konfiguracija jest.mock
 jest.mock('./api/userApi', () => ({
   getUsers: jest.fn(),
   toggleAdmin: jest.fn(),
@@ -35,7 +34,6 @@ jest.mock('./api/notificationApi', () => ({
 
 const originalConsoleError = console.error;
 
-// Preprečimo izpisovanje nepotrebnih napak v logih
 beforeAll(() => {
   console.error = jest.fn();
 });
@@ -44,7 +42,6 @@ afterAll(() => {
   console.error = originalConsoleError;
 });
 
-// Pravilna inicializacija mock funkcij
 beforeEach(() => {
   jest.clearAllMocks();
 
