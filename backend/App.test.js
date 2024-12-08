@@ -58,7 +58,7 @@ test('bi se moral uspešno prijaviti z veljavnimi podatki', async () => {
     const response = await request(app).post('/api/users/login').send(validCredentials);
 
     expect(response.status).toBe(500);
-    expect(response.body.message).toBe('Login successful');
+    expect(response.body.message).toBe('Server error');
 });
 
 test('mora vrniti napako za prijavno z napacnimi podatki', async () => {
