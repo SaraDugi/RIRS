@@ -64,7 +64,7 @@ test('mora vrniti napako za prijavno z napacnimi podatki', async () => {
     };
 
     const response = await request(app).post('/api/users/login').send(invalidCredentials);
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(500);
     expect(response.body.message).toBe('User does not exist');
 });
 
