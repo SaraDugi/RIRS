@@ -5,15 +5,19 @@ const app = require('./server');
 
 dotenv.config();
 
-const createDbConnection = () => {
-    return mysql.createConnection({
+const createDbPool = () => {
+    return mysql.createPool({
         host: process.env.DB_HOST,
         user: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
         port: process.env.PORT,
+        waitForConnections: true,
+        connectionLimit: 10,
+        queueLimit: 0,
     });
 };
+const db = createDbPool(); 
 
 test('morajo biti določene vse zahtevane okoljske spremenljivke', () => {
     const requiredEnvVars = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME', 'PORT'];
@@ -23,14 +27,17 @@ test('morajo biti določene vse zahtevane okoljske spremenljivke', () => {
     });
 });
 
-test('ne bi smelo vzpostaviti povezave z bazo podatkov z neveljavnimi podatki', (done) => {
-    const db = mysql.createConnection({ host: process.env.DB_HOST, user: 'invalid_user', password: 'invalid_password', database: process.env.DB_NAME, port: process.env.PORT });
-
-    db.connect((err) => {
-        expect(err).not.toBeNull();
-        db.end();
-        done();
+test('ne bi smelo vzpostaviti povezave z bazo podatkov z neveljavnimi podatki', async () => {
+    const invalidDb = mysql.createConnection({
+        host: process.env.DB_HOST,
+        user: 'invalid_user',
+        password: 'invalid_password',
+        database: process.env.DB_NAME,
+        port: process.env.PORT,
     });
+
+    await expect(invalidDb.connect()).rejects.toThrow();
+    await invalidDb.end();
 });
 
 test('mora vrniti napako za neveljavno posodobitev zahteve', async () => {
@@ -50,7 +57,6 @@ test('bi se moral uspešno prijaviti z veljavnimi podatki', async () => {
     expect(response.body).toHaveProperty('token');
     expect(response.body.message).toBe('Login successful');
 });
-
 
 test('mora vrniti napako za prijavno z napacnimi podatki', async () => {
     const invalidCredentials = {
@@ -89,16 +95,11 @@ test('mora vrniti napako za napačne podatke POST zahteve na napačni poti DELET
 
 const db = require('./db');
 
-afterAll((done) => {
-
-    db.end((err) => {
-        if (err) {
-            console.error('Error closing the MySQL connection:', err);
-            done(err);
-        } else {
-            console.log('MySQL connection closed');
-            done();
-        }
-    });
-
+afterAll(async () => {
+    try {
+        await db.end();
+        console.log('Database pool closed.');
+    } catch (err) {
+        console.error('Error closing the database pool:', err);
+    }
 });
