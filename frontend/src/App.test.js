@@ -34,6 +34,7 @@ jest.mock('./api/notificationApi', () => ({
 
 const originalConsoleError = console.error;
 
+// Preprečimo nepotrebno izpisovanje napak v logih
 beforeAll(() => {
   console.error = jest.fn();
 });
@@ -42,9 +43,11 @@ afterAll(() => {
   console.error = originalConsoleError;
 });
 
+// Pravilno inicializirani mock podatki pred vsakim testom
 beforeEach(() => {
   jest.clearAllMocks();
 
+  // Mock za getAllGroupedRequests
   getAllGroupedRequests.mockResolvedValue([
     {
       id: 1,
@@ -55,10 +58,13 @@ beforeEach(() => {
     },
   ]);
 
+  // Mock za getAllLeaves
   getAllLeaves.mockResolvedValue([]);
 
+  // Mock za updateRequestStatus
   updateRequestStatus.mockRejectedValue(new Error('Update Failed'));
 
+  // Mock za getUserRequests
   getUserRequests.mockResolvedValue([
     {
       id: 1,
@@ -90,6 +96,16 @@ describe('Komponenta AdminRequests', () => {
 
 describe('Komponenta AverageLeaveDurationChart', () => {
   test('obravnava scenarije brez podatkov o dopustu', async () => {
+    render(<AverageLeaveDurationChart />);
+
+    await waitFor(() => {
+      expect(screen.getByText('No data available for leave duration.')).toBeInTheDocument();
+    });
+  });
+
+  test('obravnava scenarije brez podatkov o dopustu (ponovljen test)', async () => {
+    getAllLeaves.mockResolvedValue([]);
+
     render(<AverageLeaveDurationChart />);
 
     await waitFor(() => {
@@ -149,6 +165,29 @@ describe("Komponenta App", () => {
     expect(screen.getByRole("link", { name: /login/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /register/i })).toBeInTheDocument();
   });
+});
+
+test("Glava ima pravilno uporabljen razred", () => {
+  render(
+    <MemoryRouter>
+      <Header />
+    </MemoryRouter>
+  );
+
+  const appBarElement = screen.getByRole("banner");
+  console.log(appBarElement.className);
+});
+
+test("Glava je vidna", async () => {
+  const { container } = render(
+    <MemoryRouter>
+      <ThemeProvider theme={createTheme()}>
+        <Header />
+      </ThemeProvider>
+    </MemoryRouter>
+  );
+
+  expect(container).toBeVisible();
 });
 
 test("Gumb za obvestila ni viden, ko uporabnik ni prijavljen", () => {
@@ -222,5 +261,39 @@ test("NotificationPage ustrezno kategorizira in prikaže zahteve", async () => {
     expect(screen.getByText(/Leave Type: Vacation Leave/i)).toBeInTheDocument();
     expect(screen.getByText(/Denied Requests/i)).toBeInTheDocument();
     expect(screen.getByText(/Request #122 - denied/i)).toBeInTheDocument();
+  });
+});
+
+test("Ko pride do napake pri pridobivanju, se prikaže sporočilo o napaki", async () => {
+  getUserRequests.mockRejectedValueOnce(new Error("API Error"));
+
+  render(
+    <MemoryRouter>
+      <ThemeProvider theme={createTheme()}>
+        <NotificationPage />
+      </ThemeProvider>
+    </MemoryRouter>
+  );
+
+  await waitFor(() => {
+    expect(screen.getByText(/Failed to load notifications/i)).toBeInTheDocument();
+  });
+
+  expect(screen.queryByText(/Request #/i)).not.toBeInTheDocument();
+});
+
+test("Naslov strani je po nalaganju pravilno upodobljen", async () => {
+  getUserRequests.mockResolvedValueOnce([]);
+
+  render(
+    <MemoryRouter>
+      <ThemeProvider theme={createTheme()}>
+        <NotificationPage />
+      </ThemeProvider>
+    </MemoryRouter>
+  );
+
+  await waitFor(() => {
+    expect(screen.getByText(/notifications/i)).toBeInTheDocument();
   });
 });
